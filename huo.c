@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <pthread.h>
+#include <malloc.h>
 #include "tokenizer.h"
 #include "parser.h"
 #include "structures.h"
@@ -11,11 +13,16 @@
 #include "base_util.h"
 
 int main(int argc, char const *argv[]) {
-    if(argc < 2){
+#ifdef __MINGW32__
+	extern void ptw32_processInitialize(void);
+	ptw32_processInitialize();
+	//ptw32_processTerminate();
+#endif
+	if(argc < 2){
         printf("Error: you have run Huo without pointing it to a file.\n");
         return 0;
     }
-
+     
     FILE *fp;
     fp = fopen(argv[1], "r");
     if(fp == NULL){
@@ -23,30 +30,27 @@ int main(int argc, char const *argv[]) {
         return 0;
     }
 
-    struct Tokens t = {
-        .length = 0,
-        .counter = 0
-    };
-    struct String file = {
-        .length = 0
-    };
+    struct Tokens *pt;
+    pt = (struct Tokens *)malloc(sizeof(struct Tokens));
+    pt->length = 0;
+    pt->counter = 0;
+    struct String *pfile;
+    pfile = (struct String*)malloc(sizeof(struct String));
+    pfile->length = 0;
 
     char c;
     while ((c = fgetc(fp)) != EOF){
-        file.body[file.length] = c;
-        file.length++;
+        pfile->body[pfile->length] = c;
+        pfile->length++;
     }
     fclose(fp);
-
-    struct Tokens * tokens = tokenize(file, &t);
+    struct Tokens * tokens = tokenize(pfile, pt);
     // for(int i = 0; i < tokens->length; i++){
     //     printf("%c", tokens->tokens[i].type);
     // }
-
     struct Tree root;
     root.type = 'r';
     root.size = 0;
-
     parse(&root, tokens);
     // this prints the AST for reference
     // printTree(&root);

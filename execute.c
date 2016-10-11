@@ -18,7 +18,7 @@
 #include "apply_core_function.h"
 
 struct Value execute (struct Tree * ast, struct Tree_map * defined, struct Map * let_map){
-    struct Value result;
+    struct Value result = {.type=0};
     // first check for special kinds of execution
     if(string_matches(ast->content.data.str, if_const)){
         return if_block(ast, defined, let_map);

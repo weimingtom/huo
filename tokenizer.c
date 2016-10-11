@@ -2,10 +2,10 @@
 #include <stddef.h>
 #include "constants.h"
 
-struct Tokens * tokenize(struct String file, struct Tokens *content){
+struct Tokens * tokenize(struct String *pfile, struct Tokens *content){
     int counter = 0;
-    while (counter < file.length){
-        char c = file.body[counter];
+    while (counter < pfile->length){
+        char c = pfile->body[counter];
         if(c != ' ' && c != '\n'){
             struct Token t = {
                 .data = {
@@ -27,22 +27,22 @@ struct Tokens * tokenize(struct String file, struct Tokens *content){
             else if(is_a_number(c)){
                 t.type = 'n';
                 while(is_a_number(c) || c == dot_const){
-                    t.data.body[t.data.length] = file.body[counter];
+                    t.data.body[t.data.length] = pfile->body[counter];
                     t.data.length++;
                     counter++;
-                    c = file.body[counter];
+                    c = pfile->body[counter];
                 }
                 counter--;
             }
             else if(is_a_quote(c)){
                 t.type = 's';
                 counter++;
-                char s = file.body[counter];
+                char s = pfile->body[counter];
                 while(!is_a_quote(s)){
-                    t.data.body[t.data.length] = file.body[counter];
+                    t.data.body[t.data.length] = pfile->body[counter];
                     t.data.length++;
                     counter++;
-                    s = file.body[counter];
+                    s = pfile->body[counter];
                 }
             }
             else if(is_a_function(c)){
@@ -51,10 +51,10 @@ struct Tokens * tokenize(struct String file, struct Tokens *content){
             else if(is_a_letter(c)){
                 t.type = 'k';
                 while(is_a_letter(c)){
-                    t.data.body[t.data.length] = file.body[counter];
+                    t.data.body[t.data.length] = pfile->body[counter];
                     t.data.length++;
                     counter++;
-                    c = file.body[counter];
+                    c = pfile->body[counter];
                 }
                 counter--;
             }
@@ -63,6 +63,5 @@ struct Tokens * tokenize(struct String file, struct Tokens *content){
         }
         counter++;
     }
-
     return content;
 }

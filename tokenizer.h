@@ -3,6 +3,6 @@
 
 #include "structures.h"
 
-struct Tokens * tokenize(struct String file, struct Tokens *content);
+struct Tokens * tokenize(struct String *pfile, struct Tokens *content);
 
 #endif

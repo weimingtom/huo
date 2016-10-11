@@ -34,7 +34,7 @@ struct Tree * read_import(struct String file_name){
     root->type = 'r';
     root->size = 0;
 
-    tokenize(file_contents.data.str, tokens);
+    tokenize(&file_contents.data.str, tokens);
     parse(root, tokens);
 
     free(tokens);
